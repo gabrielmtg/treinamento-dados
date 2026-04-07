@@ -186,24 +186,27 @@ def main():
     plots_dir = os.path.join(base_path, "results", "plots")
     os.makedirs(plots_dir, exist_ok=True)
 
-    ataques = obter_arquivos("ataques")
-    benchs = obter_arquivos("benchmarks")
-    all_files = benchs + ataques
-
-    raw_cache = {f: extract_raw_windows_from_file(f) for f in all_files}
+    clean_csv_path = os.path.join(base_path, "..", "data", "data_final_clean.csv")
+    print(f"Loading native monolithic dataset: {clean_csv_path}")
+    all_raw = extract_raw_windows_from_file(clean_csv_path)
+    
     NUM_INPUTS = 25 
     
     report = "# Deployment Ready Evaluation Report\n"
     report += "Algorithm: Clamped Z-Score mapped on 25 explicitly Temporal features.\n\n"
 
-    # Base splits
+    # Base splits directly mapped by stratified ratio on monolithic CSV array
     random.seed(99)
-    sh_att = ataques[:]; random.shuffle(sh_att)
-    sh_bnc = benchs[:]; random.shuffle(sh_bnc)
-    tr_files = sh_att[:int(len(sh_att)*0.8)] + sh_bnc[:int(len(sh_bnc)*0.8)]
-    vl_files = sh_att[int(len(sh_att)*0.8):] + sh_bnc[int(len(sh_bnc)*0.8):]
-    tr_raw = [x for f in tr_files for x in raw_cache[f]]
-    vl_raw = [x for f in vl_files for x in raw_cache[f]]
+    
+    # Isolate by label for explicit 80/20 stratification
+    benign_raw = [s for s in all_raw if s[1] == 0.0]
+    attack_raw = [s for s in all_raw if s[1] == 1.0]
+    
+    random.shuffle(benign_raw)
+    random.shuffle(attack_raw)
+    
+    tr_raw = benign_raw[:int(len(benign_raw)*0.8)] + attack_raw[:int(len(attack_raw)*0.8)]
+    vl_raw = benign_raw[int(len(benign_raw)*0.8):] + attack_raw[int(len(attack_raw)*0.8):]
 
     c_mins, c_maxs, means, stds = compute_benign_bounds(tr_raw)
     tr_z = apply_safeguard_transforms(tr_raw, c_mins, c_maxs, means, stds)
@@ -246,8 +249,11 @@ def main():
 
     # 3. Unseen Hard Negative Re-evaluation
     print("Testing Hard Negative Overloads...")
-    band_file = next((f for f in benchs if "bandwidth" in f), benchs[0])
-    raw_band = raw_cache[band_file]
+    
+    # Dynamically extract pure benign tests from validation split
+    val_benign_only = [x for x in vl_raw if x[1] == 0.0]
+    raw_band = val_benign_only[:10000] # Use a representative subset for scaling
+    
     np.random.seed(77)
     hard_raw = []
     for seq in raw_band:

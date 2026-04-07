@@ -1,0 +1,11 @@
+Extracting raw windows from new data...
+Loaded variables from deployment harness. Decision Threshold: 0.040051
+Executing model inference...
+
+--- NEW DATA VALIDATION READOUT ---
+Total Evaluated Samples: 420617
+True Benign Found: 147
+True Attack Found: 420470
+
+Recap TP: 420470, FN: 0 -> Recall: 1.000000
+Recap TN: 0, FP: 147 -> FPR: 1.000000

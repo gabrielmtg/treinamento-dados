@@ -35,37 +35,52 @@ def augment_window(raw_rows):
     return features
 
 def extract_raw_windows_from_file(arquivo):
+    import os
     amostras = []
     try:
-        dados = []
+        dados_por_core = {}
+        prev_time_ms_por_core = {}
         with open(arquivo, 'r') as f:
-            prev_time_ms = 0
             for linha in f:
                 l = linha.replace(',', ' ').strip()
                 if l and l[0].isdigit():
                     partes = l.split()
-                    if len(partes) >= 6:
+                    if len(partes) == 7:
+                        core_id = partes[0]
+                        tempo_str = partes[1]
+                        cycles = float(partes[2])
+                        instr = float(partes[3])
+                        cache = float(partes[4])
+                        branch = float(partes[5])
+                        label = float(partes[6])
+                    elif len(partes) == 6:
+                        core_id = "0"
                         tempo_str = partes[0]
                         cycles = float(partes[1])
                         instr = float(partes[2])
                         cache = float(partes[3])
                         branch = float(partes[4])
                         label = float(partes[5])
+                    else:
+                        continue
                         
-                        curr_ms = time_to_ms(tempo_str)
-                        delta_ms = curr_ms - prev_time_ms if prev_time_ms > 0 else 0.0
-                        prev_time_ms = curr_ms
-                        
-                        dados.append([branch, cache, instr, cycles, delta_ms, label])
+                    curr_ms = time_to_ms(tempo_str)
+                    prev_ms = prev_time_ms_por_core.get(core_id, 0)
+                    delta_ms = curr_ms - prev_ms if prev_ms > 0 else 0.0
+                    prev_time_ms_por_core[core_id] = curr_ms
+                    
+                    if core_id not in dados_por_core:
+                        dados_por_core[core_id] = []
+                    dados_por_core[core_id].append([branch, cache, instr, cycles, delta_ms, label])
 
-        if len(dados) < WINDOW_SIZE: return amostras
-
-        for i in range(len(dados) - WINDOW_SIZE + 1):
-            window_slice = dados[i:i+WINDOW_SIZE]
-            raw_rows = [x[:5] for x in window_slice]
-            features = augment_window(raw_rows)
-            label_real = window_slice[-1][5]
-            amostras.append((features, label_real))
+        for core_id, dados in dados_por_core.items():
+            if len(dados) < WINDOW_SIZE: continue
+            for i in range(len(dados) - WINDOW_SIZE + 1):
+                window_slice = dados[i:i+WINDOW_SIZE]
+                raw_rows = [x[:5] for x in window_slice]
+                features = augment_window(raw_rows)
+                label_real = window_slice[-1][5]
+                amostras.append((features, label_real))
 
     except Exception as e:
         print(f"Erro em {os.path.basename(arquivo)}: {e}")

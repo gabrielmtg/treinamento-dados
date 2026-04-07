@@ -13,7 +13,7 @@ int main() {
     const unsigned int num_input = 25; 
     const unsigned int num_output = 1;
     const unsigned int num_layers = 4;
-    const unsigned int num_neurons_hidden1 = 20;
+    const unsigned int num_neurons_hidden1 = 16;
     const unsigned int num_neurons_hidden2 = 8;
     const float desired_error = 0.001f;
     const unsigned int max_epochs = 1000;
@@ -37,7 +37,7 @@ int main() {
     fprintf(f, "const float pesos_iniciais[NUM_PESOS] = {\n");
 
     int c = 0;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 16; i++) {
         int to_node = 26 + i;
         fprintf(f, "    %ff, // Bias -> H1[%d]\n", get_weight(connections, tc, 25, to_node), i);
         c++;
@@ -48,22 +48,22 @@ int main() {
     }
 
     for (int i = 0; i < 8; i++) {
-        int to_node = 47 + i;
-        fprintf(f, "    %ff, // Bias -> H2[%d]\n", get_weight(connections, tc, 46, to_node), i);
+        int to_node = 43 + i;
+        fprintf(f, "    %ff, // Bias -> H2[%d]\n", get_weight(connections, tc, 42, to_node), i);
         c++;
-        for (int j = 0; j < 20; j++) {
+        for (int j = 0; j < 16; j++) {
             fprintf(f, "    %ff, // H1[%d] -> H2[%d]\n", get_weight(connections, tc, 26 + j, to_node), j, i);
             c++;
         }
     }
 
     for (int i = 0; i < 1; i++) {
-        int to_node = 56 + i;
-        fprintf(f, "    %ff, // Bias -> Out[%d]\n", get_weight(connections, tc, 55, to_node), i);
+        int to_node = 52 + i;
+        fprintf(f, "    %ff, // Bias -> Out[%d]\n", get_weight(connections, tc, 51, to_node), i);
         c++;
         for (int j = 0; j < 8; j++) {
-            if (c == tc) fprintf(f, "    %ff  // H2[%d] -> Out[%d]\n", get_weight(connections, tc, 47 + j, to_node), j, i);
-            else fprintf(f, "    %ff, // H2[%d] -> Out[%d]\n", get_weight(connections, tc, 47 + j, to_node), j, i);
+            if (c == tc) fprintf(f, "    %ff  // H2[%d] -> Out[%d]\n", get_weight(connections, tc, 43 + j, to_node), j, i);
+            else fprintf(f, "    %ff, // H2[%d] -> Out[%d]\n", get_weight(connections, tc, 43 + j, to_node), j, i);
             c++;
         }
     }
