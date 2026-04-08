@@ -1,0 +1,4 @@
+benchmark.c: In function ‘main’:
+benchmark.c:192:24: warning: unused variable ‘force_keep’ [-Wunused-variable]
+  192 |         volatile float force_keep = prediction; // Prevent aggressive -O3 destruction
+      |                        ^~~~~~~~~~

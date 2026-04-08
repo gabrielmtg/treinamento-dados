@@ -1,0 +1,9 @@
+Extracting first 5000 rows...
+Computing pure Python inference...
+Traceback (most recent call last):
+  File "/home/canal/github/treinamento-dados/analysis/phase3/validate_consistency.py", line 161, in <module>
+    main()
+  File "/home/canal/github/treinamento-dados/analysis/phase3/validate_consistency.py", line 79, in main
+    normed = np.array(normed, dtype=np.float32)
+                      ^^^^^^
+UnboundLocalError: cannot access local variable 'normed' where it is not associated with a value

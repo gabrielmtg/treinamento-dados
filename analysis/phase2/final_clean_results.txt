@@ -1,0 +1,11 @@
+Extracting raw windows from clean data CSV...
+Loaded bounds from deployment matrix. Decision Threshold: 0.040051
+Running 20-Neuron Base Model...
+
+--- DATA_FINAL_CLEAN VALIDATION READOUT ---
+Total Evaluated Windows: 420617
+Known Benign Traces: 280411
+Known Attack Traces: 140206
+
+Threats Found (TP): 140206 | Missed (FN): 0 -> Recall: 1.000000
+Safe Allowed (TN): 0   | Falsely Blocked (FP): 280411 -> FPR: 1.000000

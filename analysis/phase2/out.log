@@ -1,0 +1,12 @@
+Loading native monolithic dataset: /home/canal/github/treinamento-dados/analysis/phase2/../../data/data_final_clean.csv
+Evaluating Node Topologies...
+Traceback (most recent call last):
+  File "/home/canal/github/treinamento-dados/analysis/phase2/deployment_harness.py", line 338, in <module>
+    main()
+  File "/home/canal/github/treinamento-dados/analysis/phase2/deployment_harness.py", line 250, in main
+    fpr, rec, thresh, val_probs, y_val, w = run_experiment_fold(base_path, tr_z, vl_z, parser, predictor)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/canal/github/treinamento-dados/analysis/phase2/deployment_harness.py", line 181, in run_experiment_fold
+    sz = len(train_z[0][0])
+             ~~~~~~~^^^
+IndexError: list index out of range
